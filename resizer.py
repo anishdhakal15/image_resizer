@@ -1,22 +1,39 @@
 from cv2 import resize as imresize, IMREAD_UNCHANGED, INTER_AREA, imwrite, imread
-from os import listdir
-from os.path import isfile, join as pjoin, abspath, split as fsplit
+from os import listdir,mkdir
+from os.path import isfile, join as pjoin, abspath, split as fsplit, isdir
 from sys import argv
 
-
-# source_path = "/home/anish/Documents/experiments/image_resizer/images"
-# dest_path = "/home/anish/Documents/experiments/image_resizer/output"
-# dimension = (750,480)
 def resize(file_path,dest_path,dim):
-    img = imread(file_path, IMREAD_UNCHANGED)
-    resized = imresize(img, dim, interpolation = INTER_AREA)
-    dest=abspath(pjoin(dest_path,str(dim[0])+'X'+str(dim[1])+'('+fsplit(file_path)[1]+')'))
-    print(f'resizeing {file_path} to {dest}')
-    imwrite(dest,resized)
-def source_check():
-    pass
-def dest_check():
-    pass
+    try:
+        img = imread(file_path, IMREAD_UNCHANGED)
+        resized = imresize(img, dim, interpolation = INTER_AREA)
+        dest=abspath(pjoin(dest_path,str(dim[0])+'X'+str(dim[1])+'('+fsplit(file_path)[1]+')'))
+        print(f'resizeing {file_path} to {dest}')
+        imwrite(dest,resized)
+    except:
+        print(f"Error occur in file {file_path}")
+def source_check(source_path):
+    source = abspath(source_path)
+    if isdir(source):
+        files = [f for f in listdir(source_path) if isfile(pjoin(source_path, f))]
+        print(files)
+        if not files:
+            raise Exception("empty directory")
+    else:
+        raise Exception("source directory not available")
+
+
+def dest_check(dest_path):
+    dest = abspath(dest_path)
+    if not isdir(dest):
+        print("Destination directory is not available, Do you want to create (y,n)")
+        cho = input("Choice: ")
+        if cho == 'y' or cho == 'Y':
+            mkdir(dest)
+        else:
+            exit()
+if argv[1]=='help':
+    print("syntax \n python3 resizer.py source_address destination_address width height\n width and height must be integer")
 try:
     source_path = argv[1]
     dest_path = argv[2]
@@ -30,7 +47,8 @@ except Exception as e:
     print(e)
     exit()
 
-
+source_check(source_path)
+dest_check(dest_path)
 onlyfiles = [abspath(pjoin(source_path, f)) for f in listdir(source_path) if isfile(pjoin(source_path, f))]
 [resize(i,dest_path,dimension) for i in onlyfiles]
 
