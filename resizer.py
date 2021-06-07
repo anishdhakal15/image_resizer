@@ -7,7 +7,7 @@ def resize(file_path,dest_path,dim):
     try:
         img = imread(file_path, IMREAD_UNCHANGED)
         resized = imresize(img, dim, interpolation = INTER_AREA)
-        dest=abspath(pjoin(dest_path,str(dim[0])+'X'+str(dim[1])+'('+fsplit(file_path)[1]+')'))
+        dest=abspath(pjoin(dest_path,str(dim[0])+'X'+str(dim[1])+fsplit(file_path)[1]))
         print(f'resizeing {file_path} to {dest}')
         imwrite(dest,resized)
     except:
